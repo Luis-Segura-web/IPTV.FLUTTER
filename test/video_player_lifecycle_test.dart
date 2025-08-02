@@ -12,9 +12,9 @@ void main() {
         id: 'test-channel',
         name: 'Test Channel',
         streamUrl: 'http://test-stream.m3u8',
-        logoUrl: null,
+        iconUrl: null,
         description: 'Test channel description',
-        category: 'Test',
+        categoryId: 'test-category',
         isLive: true,
       );
 
@@ -24,6 +24,7 @@ void main() {
         serverUrl: 'http://test-server.com',
         username: 'test',
         password: 'test',
+        createdAt: DateTime.now(),
       );
 
       // Build the widget
@@ -53,9 +54,9 @@ void main() {
         id: 'test-channel',
         name: 'Test Channel',
         streamUrl: 'http://test-stream.m3u8',
-        logoUrl: null,
+        iconUrl: null,
         description: 'Test channel description',
-        category: 'Test',
+        categoryId: 'test-category',
         isLive: true,
       );
 
@@ -65,6 +66,7 @@ void main() {
         serverUrl: 'http://test-server.com',
         username: 'test',
         password: 'test',
+        createdAt: DateTime.now(),
       );
 
       // Build the widget
