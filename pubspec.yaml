@@ -18,9 +18,8 @@ dependencies:
   http: ^1.2.2
   dio: ^5.7.0
 
-  # Video Player
-  video_player: ^2.9.2
-  chewie: ^1.8.5
+  # Video Player - VLC (Único reproductor)
+  flutter_vlc_player: ^7.4.3
 
   # Database & Storage
   sqflite: ^2.4.1

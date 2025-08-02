@@ -195,10 +195,11 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen> {
 
   void _selectProfile(Profile profile) async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final messenger = ScaffoldMessenger.of(context);
     
     final success = await profileProvider.setActiveProfile(profile);
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('Profile "${profile.name}" selected'),
           backgroundColor: Colors.green,
@@ -206,7 +207,7 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen> {
       );
       _navigateToHome();
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(profileProvider.error ?? 'Failed to select profile'),
           backgroundColor: Colors.red,
@@ -252,10 +253,11 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen> {
 
   void _testConnection(Profile profile) async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final messenger = ScaffoldMessenger.of(context);
     final success = await profileProvider.testConnection(profile);
     
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(success 
               ? AppConstants.connectionSuccessful 
