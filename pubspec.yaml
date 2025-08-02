@@ -21,6 +21,7 @@ dependencies:
   # Video Player
   video_player: ^2.9.2
   chewie: ^1.8.5
+  awesome_video_player: ^2.0.10
 
   # Database & Storage
   sqflite: ^2.4.1

@@ -4,6 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import '../models/channel.dart';
 import '../models/profile.dart';
+import '../widgets/awesome_video_player_widget.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -25,6 +26,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool _isLoading = true;
   String? _error;
   bool _isFullScreen = false;
+  bool _useAwesomePlayer = true; // Toggle between players
 
   @override
   void initState() {
@@ -32,7 +34,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // Use addPostFrameCallback to ensure the widget is fully built before initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _initializePlayer();
+        if (!_useAwesomePlayer) {
+          _initializePlayer();
+        }
       }
     });
   }
@@ -148,20 +152,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void _retry() {
     if (!mounted) return;
     
-    _chewieController?.dispose();
-    _videoPlayerController?.dispose();
-    _chewieController = null;
-    _videoPlayerController = null;
-    
-    // Use addPostFrameCallback for safe re-initialization
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _initializePlayer();
-      }
-    });
+    if (_useAwesomePlayer) {
+      // Awesome Player handles retry internally
+      setState(() {
+        _error = null;
+      });
+    } else {
+      _chewieController?.dispose();
+      _videoPlayerController?.dispose();
+      _chewieController = null;
+      _videoPlayerController = null;
+      
+      // Use addPostFrameCallback for safe re-initialization
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _initializePlayer();
+        }
+      });
+    }
   }
 
-  void _enterFullScreen() {
+  void _togglePlayerType() {
+    setState(() {
+      _useAwesomePlayer = !_useAwesomePlayer;
+      _error = null;
+      _isLoading = false;
+    });
+
+    // Clean up current player if switching from legacy player
+    if (_useAwesomePlayer) {
+      _chewieController?.dispose();
+      _videoPlayerController?.dispose();
+      _chewieController = null;
+      _videoPlayerController = null;
+    }
+  }
     if (!mounted) return;
     
     setState(() {
@@ -199,6 +224,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            onPressed: _togglePlayerType,
+            icon: Icon(_useAwesomePlayer ? Icons.video_settings : Icons.play_circle_outline),
+            tooltip: _useAwesomePlayer ? 'Switch to Legacy Player' : 'Switch to Awesome Player',
+          ),
+          IconButton(
             onPressed: _enterFullScreen,
             icon: const Icon(Icons.fullscreen),
           ),
@@ -222,6 +252,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Widget _buildVideoPlayer() {
+    if (_useAwesomePlayer) {
+      return AwesomeVideoPlayerWidget(
+        channel: widget.channel,
+        profile: widget.profile,
+        onFullScreenToggle: () {
+          setState(() {
+            _isFullScreen = !_isFullScreen;
+          });
+        },
+        onError: (error) {
+          setState(() {
+            _error = error;
+            _isLoading = false;
+          });
+        },
+        showControls: true,
+        autoPlay: true,
+      );
+    }
+
+    // Legacy player implementation
     if (_isLoading) {
       return const Center(
         child: Column(
@@ -335,6 +386,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 ),
               ),
               const Spacer(),
+              Text(
+                'Player: ${_useAwesomePlayer ? 'Awesome' : 'Legacy'}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _useAwesomePlayer ? Colors.green : Colors.orange,
+                ),
+              ),
+              const SizedBox(width: 16),
               Text(
                 'Profile: ${widget.profile.name}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
