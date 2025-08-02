@@ -18,12 +18,12 @@ A comprehensive Flutter IPTV application with multi-profile support, smart cachi
 
 ### 📺 IPTV Streaming
 - **Xtream Codes API**: Full integration with Xtream Codes protocol
-- **Dual Video Players**: Choose between Awesome Video Player and legacy Chewie player
-- **HLS Streaming**: Support for HLS video streams with enhanced IPTV features
-- **Custom HTTP Headers**: Advanced authentication and streaming header support
+- **VLC Media Player**: Advanced video player with superior IPTV compatibility
+- **HLS Streaming**: Support for HLS, DASH, MP4, and multiple streaming formats
+- **Advanced HTTP Headers**: Comprehensive authentication and streaming header support
 - **Category Navigation**: Organized content browsing by categories
 - **Live & VOD**: Support for both live TV and video-on-demand content
-- **Enhanced Controls**: IPTV-optimized controls with fullscreen support
+- **Professional Controls**: VLC-powered controls with fullscreen support
 
 ### 🎨 Modern UI/UX
 - **Material Design 3**: Latest Material Design guidelines
@@ -60,7 +60,7 @@ lib/
 #### Services
 - **ProfileService**: Profile management and storage
 - **IPTVService**: IPTV API integration and streaming
-- **IPTVVideoService**: Advanced video player management with Awesome Video Player
+- **VLCVideoService**: Professional-grade video player management with VLC Media Player
 - **CacheService**: Smart caching with SQLite
 - **TMDBService**: Movie/TV metadata enhancement
 
@@ -133,10 +133,10 @@ CONNECTION_TIMEOUT=30000      # 30 seconds
 
 1. **Browse categories** - Use the horizontal category list to filter content
 2. **Search channels** - Use the search bar to find specific channels
-3. **Choose player** - Toggle between Awesome Video Player and legacy Chewie player
-4. **Watch content** - Tap any channel to start streaming
-5. **Player controls** - Use enhanced IPTV-optimized controls
-6. **Full-screen mode** - Double-tap the player or use the fullscreen button
+3. **Watch content** - Tap any channel to start streaming with VLC
+4. **Professional controls** - Use VLC's advanced media controls
+5. **Full-screen mode** - Automatic landscape mode for optimal viewing
+6. **Error handling** - Advanced error recovery and stream diagnostics
 
 ### Managing Profiles
 
@@ -145,28 +145,53 @@ CONNECTION_TIMEOUT=30000      # 30 seconds
 - **Test connections** - Verify profile connectivity anytime
 - **Delete profiles** - Remove unused profiles
 
-## 🎥 Video Player Features
+## 🎥 VLC Media Player Features
 
-The app now includes dual video player support with enhanced IPTV capabilities:
+The app uses VLC Media Player as its core video engine, providing professional-grade streaming capabilities:
 
-### Awesome Video Player (Recommended)
-- **Modern Implementation**: Latest video player technology optimized for IPTV
-- **Custom HTTP Headers**: Enhanced authentication and streaming support  
-- **Improved Buffering**: Optimized buffer configuration for live streams
-- **Enhanced Controls**: IPTV-specific controls with live/VOD detection
-- **Better Error Handling**: Advanced error recovery and retry mechanisms
+### 🚀 VLC Advantages
+- **Universal Compatibility**: Supports virtually all video and audio formats
+- **Superior IPTV Support**: Excellent handling of HLS, DASH, RTSP, and RTMP streams
+- **Hardware Acceleration**: Full hardware acceleration for smooth playback
+- **Advanced Buffering**: Intelligent buffering with customizable cache settings
+- **Network Resilience**: Robust handling of network interruptions and reconnections
+- **Professional Quality**: Industry-standard media player trusted worldwide
 
-### Legacy Chewie Player
-- **Fallback Option**: Maintained for compatibility
-- **Proven Stability**: Well-tested video player implementation
-- **Standard Controls**: Traditional video player controls
+### 🔧 Technical Features
+- **Multiple Protocol Support**: HTTP, HTTPS, RTSP, RTMP, UDP, and more
+- **Custom Headers**: Full support for authentication and streaming headers
+- **Adaptive Streaming**: Automatic quality adjustment based on network conditions
+- **Error Recovery**: Advanced error handling and automatic retry mechanisms
+- **Memory Efficient**: Optimized memory usage for mobile devices
 
-### Player Toggle
-Users can switch between players at runtime using the toggle button in the video player interface. The active player is indicated by a colored status indicator:
-- **Green "Awesome"**: Using Awesome Video Player
-- **Orange "Legacy"**: Using Chewie player
+### 🎮 Player Controls
+- **Standard Playback**: Play, pause, stop, seek controls
+- **Volume Control**: Granular volume adjustment
+- **Fullscreen Mode**: Automatic landscape orientation for optimal viewing
+- **Stream Information**: Real-time streaming statistics and diagnostics
 
-For detailed information about the video player implementation, see [AWESOME_VIDEO_PLAYER.md](AWESOME_VIDEO_PLAYER.md).
+### 📊 Stream Format Support
+
+| Format | Support Level | Notes |
+|--------|---------------|-------|
+| HLS (.m3u8) | ✅ Excellent | Perfect for live TV |
+| DASH (.mpd) | ✅ Excellent | Adaptive streaming |
+| MP4 | ✅ Excellent | Standard video files |
+| RTSP | ✅ Excellent | IP cameras and live streams |
+| RTMP | ✅ Excellent | Live streaming protocol |
+| TS | ✅ Very Good | Transport streams |
+| MKV | ✅ Very Good | Container format |
+| AVI | ✅ Good | Legacy format |
+| FLV | ✅ Good | Flash video |
+
+### 🛠️ IPTV Optimizations
+- **Custom User-Agent**: VLC-specific user agent for better server compatibility
+- **Network Caching**: Optimized 3-second cache for smooth playback
+- **HTTP Reconnect**: Automatic reconnection on network drops
+- **TCP for RTSP**: Forced TCP mode for better RTSP compatibility
+- **Frame Dropping**: Smart frame dropping for maintaining sync
+
+For detailed technical information, see the VLC implementation in `lib/services/vlc_video_service.dart`.
 
 ## 🛠️ Development
 
@@ -194,11 +219,11 @@ For detailed information about the video player implementation, see [AWESOME_VID
 │   ├── services/           # Business logic
 │   │   ├── cache_service.dart
 │   │   ├── iptv_service.dart
-│   │   ├── iptv_video_service.dart
+│   │   ├── vlc_video_service.dart
 │   │   ├── profile_service.dart
 │   │   └── tmdb_service.dart
 │   ├── widgets/            # Reusable components
-│   │   ├── awesome_video_player_widget.dart
+│   │   ├── vlc_player_widget.dart
 │   │   ├── category_list.dart
 │   │   ├── channel_grid.dart
 │   │   ├── profile_card.dart
@@ -220,9 +245,8 @@ dependencies:
   http: ^1.2.1
   dio: ^5.4.3+1
   
-  # Video Player
-  video_player: ^2.9.2
-  chewie: ^1.8.5
+  # Video Player - VLC Media Player
+  flutter_vlc_player: ^7.4.3
   awesome_video_player: ^2.0.10
   
   # Storage
