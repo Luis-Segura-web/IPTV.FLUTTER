@@ -31,7 +31,7 @@ class Channel {
       epgChannelId: json['epg_channel_id']?.toString(),
       isLive: json['stream_type'] == 'live' || json['is_live'] == true,
       description: json['description'] ?? json['plot'],
-      metadata: json is Map<String, dynamic> ? Map<String, dynamic>.from(json) : null,
+      metadata: Map<String, dynamic>.from(json),
     );
   }
 

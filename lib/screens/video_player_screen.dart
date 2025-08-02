@@ -4,7 +4,6 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import '../models/channel.dart';
 import '../models/profile.dart';
-import '../config/constants.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -48,6 +47,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         _error = null;
       });
 
+      // Extract theme data before async operations
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+
       _videoPlayerController = VideoPlayerController.networkUrl(
         Uri.parse(widget.channel.streamUrl),
         httpHeaders: {
@@ -58,6 +61,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
       await _videoPlayerController!.initialize();
 
+      if (!mounted) return;
+
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController!,
         autoPlay: true,
@@ -67,10 +72,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         allowPlaybackSpeedChanging: false,
         showControls: true,
         materialProgressColors: ChewieProgressColors(
-          playedColor: Theme.of(context).colorScheme.primary,
-          handleColor: Theme.of(context).colorScheme.primary,
+          playedColor: colorScheme.primary,
+          handleColor: colorScheme.primary,
           backgroundColor: Colors.grey,
-          bufferedColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          bufferedColor: colorScheme.primary.withValues(alpha: 0.3),
         ),
         placeholder: Container(
           color: Colors.black,
@@ -93,14 +98,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Playback Error',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: Colors.white70,
                     ),
                     textAlign: TextAlign.center,

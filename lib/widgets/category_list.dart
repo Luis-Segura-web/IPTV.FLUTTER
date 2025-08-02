@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/iptv_provider.dart';
-import '../models/category.dart';
 
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});

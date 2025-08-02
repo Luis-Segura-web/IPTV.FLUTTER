@@ -64,7 +64,7 @@ class CacheService {
     );
   }
 
-  Future<T?> getCache<T>(String key, T Function(Map<String, dynamic>) fromJson) async {
+  Future<T?> getCache<T>(String key, T Function(dynamic) fromJson) async {
     final db = await database;
     final results = await db.query(
       _cacheTable,
@@ -76,11 +76,7 @@ class CacheService {
 
     try {
       final data = json.decode(results.first['value'] as String);
-      if (data is List) {
-        return data.map((item) => fromJson(item as Map<String, dynamic>)).toList() as T;
-      } else {
-        return fromJson(data as Map<String, dynamic>);
-      }
+      return fromJson(data);
     } catch (e) {
       await deleteCache(key);
       return null;
@@ -104,7 +100,7 @@ class CacheService {
     );
   }
 
-  Future<T?> getProfileCache<T>(String profileId, String key, T Function(Map<String, dynamic>) fromJson) async {
+  Future<T?> getProfileCache<T>(String profileId, String key, T Function(dynamic) fromJson) async {
     final db = await database;
     final results = await db.query(
       _profileCacheTable,
@@ -116,11 +112,7 @@ class CacheService {
 
     try {
       final data = json.decode(results.first['value'] as String);
-      if (data is List) {
-        return data.map((item) => fromJson(item as Map<String, dynamic>)).toList() as T;
-      } else {
-        return fromJson(data as Map<String, dynamic>);
-      }
+      return fromJson(data);
     } catch (e) {
       await deleteProfileCache(profileId, key);
       return null;

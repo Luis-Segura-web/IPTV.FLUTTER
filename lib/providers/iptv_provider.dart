@@ -1,23 +1,23 @@
 import 'package:flutter/foundation.dart';
 import '../models/channel.dart';
-import '../models/category.dart';
+import '../models/category.dart' as models;
 import '../models/profile.dart';
 import '../services/iptv_service.dart';
 
 class IPTVProvider with ChangeNotifier {
   final IPTVService _iptvService = IPTVService();
   
-  List<Category> _categories = [];
+  List<models.Category> _categories = [];
   List<Channel> _channels = [];
   List<Channel> _filteredChannels = [];
-  Category? _selectedCategory;
+  models.Category? _selectedCategory;
   bool _isLoading = false;
   String? _error;
   String _searchQuery = '';
 
-  List<Category> get categories => _categories;
+  List<models.Category> get categories => _categories;
   List<Channel> get channels => _filteredChannels;
-  Category? get selectedCategory => _selectedCategory;
+  models.Category? get selectedCategory => _selectedCategory;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get searchQuery => _searchQuery;
@@ -66,7 +66,7 @@ class IPTVProvider with ChangeNotifier {
     }
   }
 
-  void selectCategory(Category? category) {
+  void selectCategory(models.Category? category) {
     _selectedCategory = category;
     _applyFilters();
     notifyListeners();

@@ -122,7 +122,7 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen> {
             Icon(
               Icons.live_tv_outlined,
               size: 80,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(
@@ -158,7 +158,7 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen> {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),

@@ -16,7 +16,7 @@ class IPTVService {
     final cached = await _cacheService.getProfileCache<List<Category>>(
       profile.id,
       cacheKey,
-      (json) => Category.fromJson(json),
+      (data) => (data as List).map((item) => Category.fromJson(item)).toList(),
     );
     
     if (cached != null) return cached;
@@ -53,7 +53,7 @@ class IPTVService {
     final cached = await _cacheService.getProfileCache<List<Channel>>(
       profile.id,
       cacheKey,
-      (json) => Channel.fromJson(json),
+      (data) => (data as List).map((item) => Channel.fromJson(item)).toList(),
     );
     
     if (cached != null) return cached;
@@ -100,7 +100,7 @@ class IPTVService {
     final cached = await _cacheService.getProfileCache<Map<String, dynamic>>(
       profile.id,
       cacheKey,
-      (json) => json,
+      (data) => data as Map<String, dynamic>,
     );
     
     if (cached != null) return cached;

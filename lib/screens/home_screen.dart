@@ -7,7 +7,6 @@ import '../widgets/channel_grid.dart';
 import '../widgets/search_bar_widget.dart';
 import '../config/constants.dart';
 import 'profile_management_screen.dart';
-import 'video_player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -105,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               Icons.account_circle_outlined,
               size: 80,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(
@@ -187,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               Icons.tv_off_outlined,
               size: 80,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(

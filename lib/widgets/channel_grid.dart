@@ -105,7 +105,7 @@ class ChannelCard extends StatelessWidget {
                       Text(
                         channel.description!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -122,7 +122,7 @@ class ChannelCard extends StatelessWidget {
                           Text(
                             channel.isLive ? 'Live TV' : 'On Demand',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                         ],
@@ -158,7 +158,7 @@ class ChannelCard extends StatelessWidget {
 
   Widget _buildPlaceholder(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
