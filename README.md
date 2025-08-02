@@ -18,9 +18,12 @@ A comprehensive Flutter IPTV application with multi-profile support, smart cachi
 
 ### 📺 IPTV Streaming
 - **Xtream Codes API**: Full integration with Xtream Codes protocol
-- **HLS Streaming**: Support for HLS video streams with Chewie player
+- **Dual Video Players**: Choose between Awesome Video Player and legacy Chewie player
+- **HLS Streaming**: Support for HLS video streams with enhanced IPTV features
+- **Custom HTTP Headers**: Advanced authentication and streaming header support
 - **Category Navigation**: Organized content browsing by categories
 - **Live & VOD**: Support for both live TV and video-on-demand content
+- **Enhanced Controls**: IPTV-optimized controls with fullscreen support
 
 ### 🎨 Modern UI/UX
 - **Material Design 3**: Latest Material Design guidelines
@@ -57,6 +60,7 @@ lib/
 #### Services
 - **ProfileService**: Profile management and storage
 - **IPTVService**: IPTV API integration and streaming
+- **IPTVVideoService**: Advanced video player management with Awesome Video Player
 - **CacheService**: Smart caching with SQLite
 - **TMDBService**: Movie/TV metadata enhancement
 
@@ -129,8 +133,10 @@ CONNECTION_TIMEOUT=30000      # 30 seconds
 
 1. **Browse categories** - Use the horizontal category list to filter content
 2. **Search channels** - Use the search bar to find specific channels
-3. **Watch content** - Tap any channel to start streaming
-4. **Full-screen mode** - Double-tap the player or use the fullscreen button
+3. **Choose player** - Toggle between Awesome Video Player and legacy Chewie player
+4. **Watch content** - Tap any channel to start streaming
+5. **Player controls** - Use enhanced IPTV-optimized controls
+6. **Full-screen mode** - Double-tap the player or use the fullscreen button
 
 ### Managing Profiles
 
@@ -138,6 +144,29 @@ CONNECTION_TIMEOUT=30000      # 30 seconds
 - **Edit profiles** - Use the menu on profile cards
 - **Test connections** - Verify profile connectivity anytime
 - **Delete profiles** - Remove unused profiles
+
+## 🎥 Video Player Features
+
+The app now includes dual video player support with enhanced IPTV capabilities:
+
+### Awesome Video Player (Recommended)
+- **Modern Implementation**: Latest video player technology optimized for IPTV
+- **Custom HTTP Headers**: Enhanced authentication and streaming support  
+- **Improved Buffering**: Optimized buffer configuration for live streams
+- **Enhanced Controls**: IPTV-specific controls with live/VOD detection
+- **Better Error Handling**: Advanced error recovery and retry mechanisms
+
+### Legacy Chewie Player
+- **Fallback Option**: Maintained for compatibility
+- **Proven Stability**: Well-tested video player implementation
+- **Standard Controls**: Traditional video player controls
+
+### Player Toggle
+Users can switch between players at runtime using the toggle button in the video player interface. The active player is indicated by a colored status indicator:
+- **Green "Awesome"**: Using Awesome Video Player
+- **Orange "Legacy"**: Using Chewie player
+
+For detailed information about the video player implementation, see [AWESOME_VIDEO_PLAYER.md](AWESOME_VIDEO_PLAYER.md).
 
 ## 🛠️ Development
 
@@ -165,9 +194,11 @@ CONNECTION_TIMEOUT=30000      # 30 seconds
 │   ├── services/           # Business logic
 │   │   ├── cache_service.dart
 │   │   ├── iptv_service.dart
+│   │   ├── iptv_video_service.dart
 │   │   ├── profile_service.dart
 │   │   └── tmdb_service.dart
 │   ├── widgets/            # Reusable components
+│   │   ├── awesome_video_player_widget.dart
 │   │   ├── category_list.dart
 │   │   ├── channel_grid.dart
 │   │   ├── profile_card.dart
@@ -190,8 +221,9 @@ dependencies:
   dio: ^5.4.3+1
   
   # Video Player
-  video_player: ^2.8.6
-  chewie: ^1.8.1
+  video_player: ^2.9.2
+  chewie: ^1.8.5
+  awesome_video_player: ^2.0.10
   
   # Storage
   sqflite: ^2.3.3+1
