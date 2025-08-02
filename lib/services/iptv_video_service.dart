@@ -8,36 +8,54 @@ class IPTVVideoService {
   factory IPTVVideoService() => _instance;
   IPTVVideoService._internal();
 
-  AwesomeVideoPlayerController? _currentController;
+  BetterPlayerController? _currentController;
   StreamSubscription? _statusSubscription;
   StreamSubscription? _errorSubscription;
 
   /// Creates a new video player controller for IPTV streaming
-  Future<AwesomeVideoPlayerController> createController({
+  Future<BetterPlayerController> createController({
     required Channel channel,
     required Profile profile,
-    Function(PlayerStatus)? onStatusChanged,
+    Function(BetterPlayerEventType)? onStatusChanged,
     Function(String)? onError,
   }) async {
     // Dispose previous controller if exists
     await disposeCurrentController();
 
-    // Create new controller with IPTV-specific configuration
-    final controller = AwesomeVideoPlayerController.network(
+    // Create controller with IPTV-specific configuration
+    final dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
       channel.streamUrl,
-      httpHeaders: _buildHttpHeaders(profile, channel),
+      headers: _buildHttpHeaders(profile, channel),
+    );
+
+    final configuration = BetterPlayerConfiguration(
       autoPlay: true,
+      aspectRatio: 16 / 9,
+      fit: BoxFit.contain,
+      allowedScreenSleep: false,
+      controlsConfiguration: const BetterPlayerControlsConfiguration(
+        enableSkips: false,
+        enableFullscreen: true,
+        enablePip: false,
+        enablePlayPause: true,
+        enableMute: true,
+        enableRetry: true,
+      ),
+    );
+
+    final controller = BetterPlayerController(
+      configuration,
+      betterPlayerDataSource: dataSource,
     );
 
     _currentController = controller;
 
-    // Set up status and error listeners
+    // Set up event listeners
     if (onStatusChanged != null) {
-      _statusSubscription = controller.statusStream.listen(onStatusChanged);
-    }
-
-    if (onError != null) {
-      _errorSubscription = controller.errorStream.listen(onError);
+      _statusSubscription = controller.betterPlayerEventStream.listen((event) {
+        onStatusChanged(event.betterPlayerEventType);
+      });
     }
 
     return controller;
@@ -78,9 +96,7 @@ class IPTVVideoService {
   /// Disposes the current controller and cleans up resources
   Future<void> disposeCurrentController() async {
     await _statusSubscription?.cancel();
-    await _errorSubscription?.cancel();
     _statusSubscription = null;
-    _errorSubscription = null;
 
     if (_currentController != null) {
       await _currentController!.dispose();
@@ -89,7 +105,7 @@ class IPTVVideoService {
   }
 
   /// Gets the current controller
-  AwesomeVideoPlayerController? get currentController => _currentController;
+  BetterPlayerController? get currentController => _currentController;
 
   /// Checks if a controller is currently active
   bool get hasActiveController => _currentController != null;

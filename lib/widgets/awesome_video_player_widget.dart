@@ -29,7 +29,7 @@ class AwesomeVideoPlayerWidget extends StatefulWidget {
 
 class _AwesomeVideoPlayerWidgetState extends State<AwesomeVideoPlayerWidget> {
   final IPTVVideoService _videoService = IPTVVideoService();
-  AwesomeVideoPlayerController? _controller;
+  BetterPlayerController? _controller;
   bool _isLoading = true;
   String? _error;
   bool _isFullScreen = false;
@@ -63,10 +63,7 @@ class _AwesomeVideoPlayerWidgetState extends State<AwesomeVideoPlayerWidget> {
         channel: widget.channel,
         profile: widget.profile,
         onStatusChanged: _handleStatusChanged,
-        onError: _handleError,
       );
-
-      await _controller!.initialize();
 
       if (!mounted) return;
 
@@ -85,46 +82,42 @@ class _AwesomeVideoPlayerWidgetState extends State<AwesomeVideoPlayerWidget> {
     }
   }
 
-  void _handleStatusChanged(PlayerStatus status) {
+  void _handleStatusChanged(BetterPlayerEventType eventType) {
     if (!mounted) return;
 
-    switch (status) {
-      case PlayerStatus.loading:
-        setState(() {
-          _isLoading = true;
-          _error = null;
-        });
-        break;
-      case PlayerStatus.playing:
-      case PlayerStatus.paused:
-      case PlayerStatus.completed:
+    switch (eventType) {
+      case BetterPlayerEventType.initialized:
         setState(() {
           _isLoading = false;
           _error = null;
         });
         break;
-      case PlayerStatus.failed:
+      case BetterPlayerEventType.play:
+      case BetterPlayerEventType.pause:
         setState(() {
           _isLoading = false;
-          _error = 'Playback failed';
         });
+        break;
+      case BetterPlayerEventType.exception:
+        setState(() {
+          _isLoading = false;
+          _error = 'Playback error occurred';
+        });
+        widget.onError?.call('Playback error occurred');
+        break;
+      default:
         break;
     }
   }
 
-  void _handleError(String error) {
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = false;
-      _error = error;
-    });
-
-    widget.onError?.call(error);
-  }
-
   Future<void> _retry() async {
-    await _videoService.retry(widget.channel, widget.profile);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    
+    await _videoService.disposeCurrentController();
+    await _initializePlayer();
   }
 
   void _toggleFullScreen() {
@@ -225,190 +218,7 @@ class _AwesomeVideoPlayerWidgetState extends State<AwesomeVideoPlayerWidget> {
   Widget _buildVideoPlayer() {
     return GestureDetector(
       onDoubleTap: _toggleFullScreen,
-      child: Stack(
-        children: [
-          AwesomeVideoPlayer(
-            controller: _controller!,
-            aspectRatio: 16 / 9,
-            enableCustomControls: widget.showControls,
-            placeholder: Container(
-              color: Colors.black,
-              child: const Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
-            ),
-            errorBuilder: (context, error) => _buildErrorWidget(message: error),
-          ),
-          if (widget.showControls)
-            _buildCustomControls(),
-          if (!widget.showControls)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: IconButton(
-                onPressed: _toggleFullScreen,
-                icon: Icon(
-                  _isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-            ),
-        ],
-      ),
+      child: BetterPlayer(controller: _controller!),
     );
-  }
-
-  Widget _buildCustomControls() {
-    return VideoControls(
-      controller: _controller!,
-      showFullScreenButton: true,
-      showSkipButtons: !widget.channel.isLive,
-      onFullScreenToggle: _toggleFullScreen,
-      primaryColor: Theme.of(context).colorScheme.primary,
-    );
-  }
-}
-
-/// Custom video controls widget for IPTV
-class VideoControls extends StatefulWidget {
-  final AwesomeVideoPlayerController controller;
-  final bool showFullScreenButton;
-  final bool showSkipButtons;
-  final VoidCallback? onFullScreenToggle;
-  final Color primaryColor;
-
-  const VideoControls({
-    super.key,
-    required this.controller,
-    this.showFullScreenButton = true,
-    this.showSkipButtons = true,
-    this.onFullScreenToggle,
-    this.primaryColor = Colors.blue,
-  });
-
-  @override
-  State<VideoControls> createState() => _VideoControlsState();
-}
-
-class _VideoControlsState extends State<VideoControls> {
-  bool _showControls = true;
-  AwesomeVideoPlayerController get _controller => widget.controller;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_showControls) return const SizedBox.shrink();
-
-    return AnimatedOpacity(
-      opacity: _showControls ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 300),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withValues(alpha: 0.7),
-              Colors.transparent,
-              Colors.black.withValues(alpha: 0.7),
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-            _buildTopControls(),
-            const Spacer(),
-            _buildBottomControls(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopControls() {
-    return Row(
-      children: [
-        const Spacer(),
-        if (widget.showFullScreenButton)
-          IconButton(
-            onPressed: widget.onFullScreenToggle,
-            icon: const Icon(Icons.fullscreen, color: Colors.white),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildBottomControls() {
-    return StreamBuilder<PlayerState>(
-      stream: _controller.playerStateStream,
-      builder: (context, snapshot) {
-        final state = snapshot.data ?? PlayerState.stopped;
-        final isPlaying = state == PlayerState.playing;
-        
-        return Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                if (isPlaying) {
-                  _controller.pause();
-                } else {
-                  _controller.play();
-                }
-              },
-              icon: Icon(
-                isPlaying ? Icons.pause : Icons.play_arrow,
-                color: Colors.white,
-              ),
-            ),
-            if (widget.showSkipButtons) ...[
-              IconButton(
-                onPressed: () {
-                  // Skip backward 10 seconds - implement if supported
-                },
-                icon: const Icon(Icons.replay_10, color: Colors.white),
-              ),
-              IconButton(
-                onPressed: () {
-                  // Skip forward 10 seconds - implement if supported
-                },
-                icon: const Icon(Icons.forward_10, color: Colors.white),
-              ),
-            ],
-            const Spacer(),
-            StreamBuilder<Duration>(
-              stream: _controller.positionStream,
-              builder: (context, positionSnapshot) {
-                final position = positionSnapshot.data ?? Duration.zero;
-                return StreamBuilder<Duration?>(
-                  stream: _controller.durationStream,
-                  builder: (context, durationSnapshot) {
-                    final duration = durationSnapshot.data;
-                    if (duration != null && duration.inSeconds > 0) {
-                      return Text(
-                        '${_formatDuration(position)} / ${_formatDuration(duration)}',
-                        style: const TextStyle(color: Colors.white),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final seconds = duration.inSeconds.remainder(60);
-
-    if (hours > 0) {
-      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    } else {
-      return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
   }
 }

@@ -187,6 +187,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       _videoPlayerController = null;
     }
   }
+
+  void _enterFullScreen() {
     if (!mounted) return;
     
     setState(() {
