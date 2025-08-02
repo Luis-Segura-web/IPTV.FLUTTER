@@ -29,7 +29,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _initializePlayer();
+    // Use addPostFrameCallback to ensure the widget is fully built before initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _initializePlayer();
+      }
+    });
   }
 
   @override
@@ -42,6 +47,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _initializePlayer() async {
     try {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = true;
         _error = null;
@@ -71,6 +78,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         allowMuting: true,
         allowPlaybackSpeedChanging: false,
         showControls: true,
+        aspectRatio: _videoPlayerController!.value.aspectRatio,
         materialProgressColors: ChewieProgressColors(
           playedColor: colorScheme.primary,
           handleColor: colorScheme.primary,
@@ -122,10 +130,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         },
       );
 
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
         _error = e.toString();
@@ -134,12 +146,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _retry() {
+    if (!mounted) return;
+    
     _chewieController?.dispose();
     _videoPlayerController?.dispose();
-    _initializePlayer();
+    _chewieController = null;
+    _videoPlayerController = null;
+    
+    // Use addPostFrameCallback for safe re-initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _initializePlayer();
+      }
+    });
   }
 
   void _enterFullScreen() {
+    if (!mounted) return;
+    
     setState(() {
       _isFullScreen = true;
     });
@@ -151,6 +175,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _exitFullScreen() {
+    if (!mounted) return;
+    
     setState(() {
       _isFullScreen = false;
     });
