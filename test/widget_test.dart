@@ -7,24 +7,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:mi_app_flutter/main.dart';
+import 'package:iptv_flutter/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App starts with splash screen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const IPTVApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the splash screen is displayed
+    expect(find.text('IPTV Flutter'), findsOneWidget);
+    expect(find.text('Streaming Made Simple'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('App has correct theme configuration', (WidgetTester tester) async {
+    await tester.pumpWidget(const IPTVApp());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
+    
+    expect(materialApp.title, 'IPTV Flutter');
+    expect(materialApp.debugShowCheckedModeBanner, false);
+    expect(materialApp.themeMode, ThemeMode.system);
   });
 }
